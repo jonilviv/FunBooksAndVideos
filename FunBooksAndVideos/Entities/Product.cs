@@ -12,5 +12,7 @@ namespace FunBooksAndVideos.Entities
         public decimal Price { get; set; }
 
         public bool IsPhysical { get; set; }
+
+        public bool IsMembership { get; set; }
     }
 }

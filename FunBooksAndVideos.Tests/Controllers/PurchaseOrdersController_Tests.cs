@@ -19,24 +19,52 @@ namespace FunBooksAndVideos.Tests.Controllers
 {
     public sealed class PurchaseOrdersController_Tests
     {
-        private static PurchaseOrdersController BuildController(out List<PurchaseOrder> purchaseOrders, out Mock<DbSet<PurchaseOrder>> mockDbSet)
+        private static PurchaseOrdersController BuildController(out List<PurchaseOrder> purchaseOrders, out Mock<DbSet<PurchaseOrder>> purchaseOrderMmockDbSet)
         {
+            var customer1 = new Customer
+            {
+                Id = 1,
+                Name = "Customer One",
+                Email = "cutomer1@test.com",
+                MembershipType = MembershipType.Regular,
+                Address = "123 Main St, Anytown, USA"
+            };
+
+            var customer2 = new Customer
+            {
+                Id = 2,
+                Name = "Customer Two",
+                Email = "cutomer2@test.com",
+                MembershipType = MembershipType.Premium,
+                Address = "456 Elm Avenue, Springfield, IL 67890"
+            };
+
+            Product product11 = null;
+            Product product12 = null;
+            var products1 = new List<Product>
+             {
+                 product11,
+                  product12
+             };
+
             var purchaseOrder1 = new PurchaseOrder
             {
                 Id = 1,
                 CreatedAt = DateTime.UtcNow,
                 TotalPrice = 12.34m,
-                //Customer  =     ,
-                //Products  =     ,
+                Customer = customer1,
+                Products = products1,
                 //ShippingSlip  =     ,
             };
+
+            List<Product> products2 = null;
             var purchaseOrder2 = new PurchaseOrder
             {
                 Id = 2,
                 CreatedAt = DateTime.UtcNow,
                 TotalPrice = 23.45m,
-                //Customer  =     ,
-                //Products  =     ,
+                Customer = customer2,
+                Products = products2,
                 //ShippingSlip  =     ,
             };
             purchaseOrders = new List<PurchaseOrder>
@@ -44,22 +72,24 @@ namespace FunBooksAndVideos.Tests.Controllers
                 purchaseOrder1,
                 purchaseOrder2
             };
-            mockDbSet = new Mock<DbSet<PurchaseOrder>>();
+            purchaseOrderMmockDbSet = new Mock<DbSet<PurchaseOrder>>();
 
-            mockDbSet.As<IAsyncEnumerable<PurchaseOrder>>()
+            purchaseOrderMmockDbSet.As<IAsyncEnumerable<PurchaseOrder>>()
                 .Setup(m => m.GetAsyncEnumerator(It.IsAny<CancellationToken>()))
                 .Returns(new TestAsyncEnumerator<PurchaseOrder>(purchaseOrders.GetEnumerator()));
 
-            mockDbSet.As<IQueryable<PurchaseOrder>>()
+            purchaseOrderMmockDbSet.As<IQueryable<PurchaseOrder>>()
                 .Setup(m => m.Provider)
                 .Returns(new TestAsyncQueryProvider<PurchaseOrder>(purchaseOrders.AsQueryable().Provider));
 
-            mockDbSet.As<IQueryable<PurchaseOrder>>().Setup(m => m.Expression).Returns(purchaseOrders.AsQueryable().Expression);
-            mockDbSet.As<IQueryable<PurchaseOrder>>().Setup(m => m.ElementType).Returns(purchaseOrders.AsQueryable().ElementType);
-            mockDbSet.As<IQueryable<PurchaseOrder>>().Setup(m => m.GetEnumerator()).Returns(purchaseOrders.AsQueryable().GetEnumerator());
+            purchaseOrderMmockDbSet.As<IQueryable<PurchaseOrder>>().Setup(m => m.Expression).Returns(purchaseOrders.AsQueryable().Expression);
+            purchaseOrderMmockDbSet.As<IQueryable<PurchaseOrder>>().Setup(m => m.ElementType).Returns(purchaseOrders.AsQueryable().ElementType);
+            purchaseOrderMmockDbSet.As<IQueryable<PurchaseOrder>>().Setup(m => m.GetEnumerator()).Returns(purchaseOrders.AsQueryable().GetEnumerator());
 
             var mockContext = new Mock<IFunDbContext>();
-            mockContext.Setup(x => x.PurchaseOrders).Returns(mockDbSet.Object);
+            mockContext.Setup(x => x.PurchaseOrders).Returns(purchaseOrderMmockDbSet.Object);
+            // mockContext.Setup(x=> x.Customers).Returns();
+            // mockContext.Setup(x=> x.Products).Returns();
 
             var mockProcessor = new Mock<IPurchaseOrderProcessor>();
 

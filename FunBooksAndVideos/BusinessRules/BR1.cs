@@ -6,9 +6,17 @@ namespace FunBooksAndVideos.BusinessRules
     {
         public void ProcessPurchaseOrder(PurchaseOrder purchaseOrder)
         {
-            if (purchaseOrder.Customer.MembershipType == MembershipType.Premium)
+            foreach (var product in purchaseOrder.Products)
             {
-                //TODO: implement logic, that I don't understand
+                if (product.IsMembership)
+                {
+                    purchaseOrder.Customer.MembershipType = MembershipType.Premium;
+
+                    var br2 = new BR2();
+                    br2.ProcessPurchaseOrder(purchaseOrder);
+
+                    return;
+                }
             }
         }
     }

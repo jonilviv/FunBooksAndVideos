@@ -8,6 +8,13 @@ namespace FunBooksAndVideos.BusinessRules
     {
         public void ProcessPurchaseOrder(PurchaseOrder purchaseOrder)
         {
+            bool br2ShouldBeSkipped = purchaseOrder.Products.Any(product => product.IsMembership);
+
+            if (br2ShouldBeSkipped)
+            {
+                return;
+            }
+
             bool needsShippingSlip = purchaseOrder.Products.Any(product => product.IsPhysical);
 
             if (!needsShippingSlip)
